@@ -106,7 +106,7 @@ namespace MergeNow.ViewModels
 
         public void Reconnect()
         {
-            IsSectionEnabled = _mergeNowService.IsOnlineAsync().ReturnAsyncCatchErrors(_messageService.ShowError);
+            ReconnectAsync().FireAsyncCatchErrors(_messageService.ShowError);
         }
 
         private async Task FindChangesetAsync()
@@ -158,6 +158,11 @@ namespace MergeNow.ViewModels
             {
                 IsSectionEnabled = isSectionEnabled;
             }
+        }
+
+        private async Task ReconnectAsync()
+        {
+            IsSectionEnabled = await _mergeNowService.IsOnlineAsync();
         }
 
         private Task ClearPageCommandAsync()
@@ -218,21 +223,20 @@ namespace MergeNow.ViewModels
 
         public void ShowForSelectedHistoryViewChangeset()
         {
-            Changeset[] changesets = _mergeNowService
-                .GetHistoryViewSelectedChangesetsAsync()
-                .ReturnAsyncCatchErrors(_messageService.ShowError);
+            ShowForSelectedHistoryViewChangesetAsync().FireAsyncCatchErrors(_messageService.ShowError);
+        }
 
-            if (changesets.Length == 0)
+        private async Task ShowForSelectedHistoryViewChangesetAsync()
+        {
+            var changesets = await _mergeNowService.GetHistoryViewSelectedChangesetsAsync();
+
+            if (changesets == null || changesets.Length == 0)
             {
                 return;
             }
 
-            _mergeNowService
-                .NavigateToPendingChangePageAsync()
-                .FireAsyncCatchErrors(_messageService.ShowError);
-
-            ApplyChangesetAsync(changesets.FirstOrDefault())
-                .FireAsyncCatchErrors(_messageService.ShowError);
+            await _mergeNowService.NavigateToPendingChangePageAsync();
+            await ApplyChangesetAsync(changesets.First());
         }
     }
 }

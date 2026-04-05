@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{264268C8-7A1A-470C-BCC6-2D165A797434}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>MergeNow</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MergeNowCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MergeNowComposition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MergeNowPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MergeNowSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MergeNowSectionMemento.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\MergeNowSectionControl.xaml.cs">
+      <DependentUpon>MergeNowSectionControl.xaml</DependentUpon>
+      <Link>Views\MergeNowSectionControl.xaml.cs</Link>
+    </Compile>
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE.txt">
+      <Link>LICENSE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)MergeNow.png">
+      <Link>MergeNow.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="$(MSBuildThisFileDirectory)MergeNowKey.snk">
+      <Link>MergeNowKey.snk</Link>
+    </None>
+    <Page Include="$(MSBuildThisFileDirectory)Views\MergeNowSectionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <Link>Views\MergeNowSectionControl.xaml</Link>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

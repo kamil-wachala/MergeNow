@@ -32,7 +32,7 @@ namespace MergeNow.Services
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
 
-            RenewVersionControlConnectection();
+            RenewVersionControlConnection();
         }
 
         public async Task<bool> IsOnlineAsync()
@@ -204,7 +204,7 @@ namespace MergeNow.Services
 
             foreach (var workItem in changeset.WorkItems)
             {
-                AssociateWorkItem(workItem.Id, pendingChangesPage);
+                await AssociateWorkItemAsync(workItem.Id, pendingChangesPage);
             }
 
             if (workspace.QueryConflicts(new string[] { targetBranch }, true).Any())
@@ -218,6 +218,7 @@ namespace MergeNow.Services
         public async Task ClearPendingChangesPageAsync()
         {
             var pendingChangesPage = await GetPendingChangesPageAsync();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_asyncPackage.DisposalToken);
             SetComment(null, pendingChangesPage);
             ClearAssociatedWorkItems(pendingChangesPage);
             ExcludeAll(pendingChangesPage);
@@ -225,6 +226,7 @@ namespace MergeNow.Services
 
         public async Task NavigateToPendingChangePageAsync()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_asyncPackage.DisposalToken);
             var teamExplorer = await GetTeamExplorerAsync();
             teamExplorer?.NavigateToPage(new Guid(TeamExplorerPageIds.PendingChanges), null);
         }
@@ -345,12 +347,12 @@ namespace MergeNow.Services
             }
             catch
             {
-                RenewVersionControlConnectection();
+                RenewVersionControlConnection();
                 return await _versionControlConnectionTask.GetValueAsync();
             }
         }
 
-        private void RenewVersionControlConnectection()
+        private void RenewVersionControlConnection()
         {
             _versionControlConnectionTask = new AsyncLazy<VersionControlServer>(ConnectToVersionControlAsync, ThreadHelper.JoinableTaskFactory);
         }
@@ -408,6 +410,7 @@ namespace MergeNow.Services
 
         private async Task<ITeamExplorerPage> GetPendingChangesPageAsync()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_asyncPackage.DisposalToken);
             var teamExplorer = await GetTeamExplorerAsync();
 
             if (teamExplorer?.CurrentPage?.Title == "Pending Changes")
@@ -560,27 +563,28 @@ namespace MergeNow.Services
             ReflectionUtils.InvokeMethod("RemoveCheckinWorkItems", pendingCheckinManager, wiInfo);
         }
 
-        private static void AssociateWorkItem(int workItemId, ITeamExplorerPage pendingChangesPage)
+        private static Task AssociateWorkItemAsync(int workItemId, ITeamExplorerPage pendingChangesPage)
         {
             var model = GetPendingChangesPageModel(pendingChangesPage);
             if (model == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var enumType = ReflectionUtils.GetNestedType("WorkItemsAddSource", model.GetType().BaseType);
             if (enumType == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var addByIdValue = Enum.Parse(enumType, "AddById");
             if (addByIdValue == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            ReflectionUtils.InvokeMethod("AddWorkItemsByIdAsync", model, new int[] { workItemId }, addByIdValue);
+            return ReflectionUtils.InvokeMethod<Task>("AddWorkItemsByIdAsync", model, new int[] { workItemId }, addByIdValue)
+                ?? Task.CompletedTask;
         }
     }
 }

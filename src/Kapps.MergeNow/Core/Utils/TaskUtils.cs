@@ -20,30 +20,12 @@ namespace MergeNow.Core.Utils
             try
             {
 #pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
-                await task;
+                await task.ConfigureAwait(false);
 #pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
             }
             catch (Exception ex)
             {
                 errorHandler?.Invoke(ex);
-            }
-        }
-
-        public static T ReturnAsyncCatchErrors<T>(this Task<T> task, Action<Exception> errorHandler)
-        {
-            if (task == null)
-            {
-                return default;
-            }
-
-            try
-            {
-                return task.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                errorHandler?.Invoke(ex);
-                return default;
             }
         }
     }

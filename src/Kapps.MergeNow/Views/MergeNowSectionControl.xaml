@@ -70,7 +70,7 @@
             </TextBlock.Style>
         </TextBlock>
 
-        <Button Content="..." Margin="5,10,1,0" VerticalAlignment="Center" Width="30" Height="22" Grid.Row="0" Grid.Column="3"
+        <Button Content="..." Margin="5,10,1,0" VerticalAlignment="Center" Width="30" Height="22" Grid.Row="0" Grid.Column="2"
                 Command="{Binding BrowseCommand}"
                 Style="{DynamicResource {x:Static shell:VsResourceKeys.ButtonStyleKey}}"/>
 

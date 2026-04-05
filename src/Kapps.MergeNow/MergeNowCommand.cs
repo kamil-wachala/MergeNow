@@ -1,4 +1,4 @@
-﻿using MergeNow.ViewModels;
+using MergeNow.ViewModels;
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.ComponentModel.Design;
@@ -29,7 +29,7 @@ namespace MergeNow
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(asyncPackage.DisposalToken);
 
-            OleMenuCommandService commandService = await asyncPackage.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var commandService = await asyncPackage.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             Instance = new MergeNowCommand(viewModel, commandService);
         }
 

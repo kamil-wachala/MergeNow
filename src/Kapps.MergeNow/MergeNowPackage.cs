@@ -1,4 +1,4 @@
-﻿using MergeNow.Services;
+using MergeNow.Services;
 using MergeNow.Settings;
 using MergeNow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,15 +19,13 @@ namespace MergeNow
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class MergeNowPackage : AsyncPackage
     {
-        private static IServiceProvider ServiceProvider { get; set; }
-
         protected async override Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             try
             {
                 var serviceCollection = new ServiceCollection();
                 ConfigureServices(serviceCollection);
-                ServiceProvider = serviceCollection.BuildServiceProvider();
+                MergeNowComposition.Initialize(serviceCollection.BuildServiceProvider());
             }
             catch (Exception ex)
             {
@@ -36,7 +34,7 @@ namespace MergeNow
 
             try
             {
-                var viewModel = Resolve<MergeNowSectionViewModel>();
+                var viewModel = MergeNowComposition.Resolve<MergeNowSectionViewModel>();
                 await MergeNowCommand.InitializeAsync(this, viewModel);
             }
             catch (Exception ex)
@@ -55,11 +53,6 @@ namespace MergeNow
             services.AddSingleton<IMergeNowService, MergeNowService>();
             services.AddSingleton<MergeNowSectionViewModel>();
             services.AddSingleton<MergeNowSectionMemento>();
-        }
-
-        public static TControl Resolve<TControl>() where TControl : class
-        {
-            return ServiceProvider?.GetService<TControl>();
         }
     }
 }

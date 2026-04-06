@@ -34,6 +34,7 @@ namespace MergeNow
 
             try
             {
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 var viewModel = MergeNowComposition.Resolve<MergeNowSectionViewModel>();
                 await MergeNowCommand.InitializeAsync(this, viewModel);
             }

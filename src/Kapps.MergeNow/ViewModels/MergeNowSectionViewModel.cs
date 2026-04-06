@@ -4,9 +4,12 @@ using MergeNow.Core.Utils;
 using MergeNow.Model;
 using MergeNow.Services;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using Microsoft.VisualStudio.Shell;
+using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace MergeNow.ViewModels
 {
@@ -26,6 +29,8 @@ namespace MergeNow.ViewModels
         public IBaseCommand ClearMergeNowCommand { get; }
 
         public ObservableCollection<string> TargetBranches { get; }
+        private ICollectionView _filteredTargetBranches;
+        public ICollectionView FilteredTargetBranches => EnsureFilteredTargetBranches();
 
         private bool _isOnline;
         public bool IsSectionEnabled
@@ -56,10 +61,56 @@ namespace MergeNow.ViewModels
         public string SelectedTargetBranch
         {
             get => _selectedTargetBranch;
-            set => SetValue(ref _selectedTargetBranch, value);
+            set
+            {
+                if (!SetValue(ref _selectedTargetBranch, value))
+                {
+                    return;
+                }
+
+                IsTargetBranchPickerOpen = false;
+                RaisePropertyChanged(nameof(TargetBranchPickerDisplayText));
+            }
         }
 
         public bool AnyTargetBranches => TargetBranches.Any();
+        public bool AnyFilteredTargetBranches => _filteredTargetBranches?.Cast<object>().Any() == true;
+        public string TargetBranchPickerDisplayText => string.IsNullOrWhiteSpace(SelectedTargetBranch)
+            ? "Select a target branch"
+            : SelectedTargetBranch;
+
+        private string _targetBranchSearchText;
+        public string TargetBranchSearchText
+        {
+            get => _targetBranchSearchText;
+            set
+            {
+                if (!SetValue(ref _targetBranchSearchText, value))
+                {
+                    return;
+                }
+
+                RefreshTargetBranchFilter();
+            }
+        }
+
+        private bool _isTargetBranchPickerOpen;
+        public bool IsTargetBranchPickerOpen
+        {
+            get => _isTargetBranchPickerOpen;
+            set
+            {
+                if (!SetValue(ref _isTargetBranchPickerOpen, value))
+                {
+                    return;
+                }
+
+                if (value)
+                {
+                    TargetBranchSearchText = string.Empty;
+                }
+            }
+        }
 
         private bool _combinedMerge;
         public bool CombinedMerge
@@ -162,6 +213,7 @@ namespace MergeNow.ViewModels
 
         private async Task ReconnectAsync()
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             IsSectionEnabled = await _mergeNowService.IsOnlineAsync();
         }
 
@@ -195,6 +247,7 @@ namespace MergeNow.ViewModels
 
         private async Task ApplyChangesetAsync(Changeset changeset)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             ResetView();
 
             if (changeset == null)
@@ -207,7 +260,13 @@ namespace MergeNow.ViewModels
             SelectedChangeset = changeset;
 
             var branches = await _mergeNowService.GetTargetBranchesAsync(SelectedChangeset);
-            branches?.ToList().ForEach(branch => TargetBranches.Add(branch));
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            foreach (var branch in branches?.OrderBy(branch => branch, System.StringComparer.OrdinalIgnoreCase) ?? Enumerable.Empty<string>())
+            {
+                TargetBranches.Add(branch);
+            }
+
+            RefreshTargetBranchFilter();
         }
 
         private void ResetView()
@@ -216,7 +275,10 @@ namespace MergeNow.ViewModels
             ChangesetName = string.Empty;
 
             SelectedTargetBranch = string.Empty;
+            TargetBranchSearchText = string.Empty;
+            IsTargetBranchPickerOpen = false;
             TargetBranches.Clear();
+            RefreshTargetBranchFilter();
 
             MergeHistory.Clear();
         }
@@ -237,6 +299,44 @@ namespace MergeNow.ViewModels
 
             await _mergeNowService.NavigateToPendingChangePageAsync();
             await ApplyChangesetAsync(changesets.First());
+        }
+
+        private bool FilterTargetBranch(object item)
+        {
+            if (!(item is string branch))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(TargetBranchSearchText))
+            {
+                return true;
+            }
+
+            return branch.IndexOf(TargetBranchSearchText, System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private void RefreshTargetBranchFilter()
+        {
+            _filteredTargetBranches?.Refresh();
+            RaisePropertyChanged(nameof(AnyFilteredTargetBranches));
+        }
+
+        private ICollectionView EnsureFilteredTargetBranches()
+        {
+            if (_filteredTargetBranches != null)
+            {
+                return _filteredTargetBranches;
+            }
+
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                _filteredTargetBranches = CollectionViewSource.GetDefaultView(TargetBranches);
+                _filteredTargetBranches.Filter = FilterTargetBranch;
+            });
+
+            return _filteredTargetBranches;
         }
     }
 }

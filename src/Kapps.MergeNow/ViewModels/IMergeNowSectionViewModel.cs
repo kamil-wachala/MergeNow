@@ -1,5 +1,6 @@
 ﻿using MergeNow.Core.Mvvm.Commands;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace MergeNow.ViewModels
 {
@@ -12,12 +13,17 @@ namespace MergeNow.ViewModels
         IBaseCommand ClearPageCommand { get; }
         IBaseCommand ClearMergeNowCommand { get; }
         ObservableCollection<string> TargetBranches { get; }
+        ICollectionView FilteredTargetBranches { get; }
 
         bool IsSectionEnabled { get; set; }
         string ChangesetNumber { get; set; }
         string ChangesetName { get; set; }
         string SelectedTargetBranch { get; set; }
+        string TargetBranchSearchText { get; set; }
+        string TargetBranchPickerDisplayText { get; }
+        bool IsTargetBranchPickerOpen { get; set; }
         bool AnyTargetBranches { get; }
+        bool AnyFilteredTargetBranches { get; }
         bool CombinedMerge { get; set; }
         bool IsAdvancedExpanded { get; set; }
     }

@@ -20,7 +20,7 @@ namespace MergeNow.Core.Utils
             try
             {
 #pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
-                await task.ConfigureAwait(false);
+                await task;
 #pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
             }
             catch (Exception ex)

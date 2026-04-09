@@ -5,7 +5,12 @@ Pick a changeset and merge it directly to selected target branch:
 ![MergeNow view](https://github.com/kamil-wachala/MergeNow/blob/main/docs/MergeNowView.png)
 
 # Installation
-Get the extension from [here](https://marketplace.visualstudio.com/items?itemName=KamilWachala.MergeNow10) and double clik on the VSIX file.
+* For **Visual Studio 2022** download **MergeNow (VS 2022)** extension from [here](https://marketplace.visualstudio.com/items?itemName=KamilWachala.MergeNow10).
+* For **Visual Studio 2026** download **MergeNow (VS 2026)** extension from [here](https://marketplace.visualstudio.com/items?itemName=KamilWachala.MergeNow2026).
+
+Then double-click the VSIX file and select the appropriate Visual Studio version.
+Unfortunately, due to recent Microsoft extension compatibility policies, I cannot prevent you from installing an incompatible extension into the wrong version of Visual Studio.
+Please make sure to use the correct version, otherwise the extension will not work.
 
 # Requirements
 * Microsoft Visual Studio 2022 or 2026 installed

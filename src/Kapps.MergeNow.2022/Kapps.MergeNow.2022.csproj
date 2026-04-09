@@ -20,7 +20,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MergeNow</RootNamespace>
-    <AssemblyName>MergeNow %28VS 2022%29</AssemblyName>
+    <AssemblyName>MergeNow-VS-2022</AssemblyName>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>

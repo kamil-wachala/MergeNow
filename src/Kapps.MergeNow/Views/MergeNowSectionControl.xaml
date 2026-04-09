@@ -28,15 +28,148 @@
                 <Setter Property="BorderThickness" Value="0" />
             </Style>
             <Style x:Key="BranchPickerButtonStyle" TargetType="ToggleButton">
-                <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxBackgroundBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxTextBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxBorderBrushKey}}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="Padding" Value="6,2" />
+                <Setter Property="Padding" Value="5,0,0,0" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="OuterBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="17" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ContentPresenter Grid.Column="0"
+                                                      Margin="{TemplateBinding Padding}"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+
+                                    <Border x:Name="GlyphBorder"
+                                            Grid.Column="1"
+                                            Background="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxBackgroundBrushKey}}"
+                                            BorderBrush="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxBorderBrushKey}}"
+                                            BorderThickness="1,0,0,0">
+                                        <Path x:Name="Glyph"
+                                              Width="7"
+                                              Height="4"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Data="M 0 0 L 3.5 4 L 7 0 Z"
+                                              Fill="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxGlyphBrushKey}}"
+                                              Stretch="Fill" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledBackgroundBrushKey}}" />
+                                    <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledBorderBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledTextBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledBackgroundBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledBorderBrushKey}}" />
+                                    <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxDisabledGlyphBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseOverBackgroundGradientBrushKey}}" />
+                                    <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseOverBorderBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseOverTextBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxButtonMouseOverBackgroundBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxButtonMouseOverSeparatorBrushKey}}" />
+                                    <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseOverGlyphBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedBackgroundBrushKey}}" />
+                                    <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedBorderBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedTextBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedButtonBackgroundBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedButtonSeparatorBrushKey}}" />
+                                    <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedGlyphBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseDownBackgroundBrushKey}}" />
+                                    <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseDownBorderBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseDownTextBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxButtonMouseDownBackgroundBrushKey}}" />
+                                    <Setter TargetName="GlyphBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxButtonMouseDownSeparatorBrushKey}}" />
+                                    <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxMouseDownGlyphBrushKey}}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
             <Style x:Key="BranchPickerListStyle" TargetType="ListBoxItem">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemTextBrushKey}}" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Padding" Value="6,4" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="ItemBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemMouseOverBackgroundBrushKey}}" />
+                                    <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemMouseOverBorderBrushKey}}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemMouseOverTextBrushKey}}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxSelectionBrushKey}}" />
+                                    <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxFocusedBorderBrushKey}}" />
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="True" />
+                                        <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemTextInactiveBrushKey}}" />
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="BranchPickerListBoxStyle" TargetType="ListBox">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxPopupBackgroundGradientBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxItemTextBrushKey}}" />
+                <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding AnyFilteredTargetBranches}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="BranchPickerPopupBorderStyle" TargetType="Border">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxPopupBorderBrushKey}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxPopupBackgroundGradientBrushKey}}" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -111,22 +244,9 @@
                           IsChecked="{Binding IsTargetBranchPickerOpen, Mode=TwoWay}"
                           IsEnabled="{Binding AnyTargetBranches}"
                           Style="{StaticResource BranchPickerButtonStyle}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
-                               VerticalAlignment="Center"
-                               Text="{Binding TargetBranchPickerDisplayText}"
-                               TextTrimming="CharacterEllipsis"
-                               Style="{StaticResource VsTextBlockStyle}" />
-                    <TextBlock Grid.Column="1"
-                               Margin="8,0,0,0"
-                               VerticalAlignment="Center"
-                               Text="v"
-                               Style="{StaticResource VsTextBlockStyle}" />
-                </Grid>
+                <TextBlock VerticalAlignment="Center"
+                           Text="{Binding TargetBranchPickerDisplayText}"
+                           TextTrimming="CharacterEllipsis" />
             </ToggleButton>
 
             <Popup IsOpen="{Binding IsTargetBranchPickerOpen, Mode=TwoWay}"
@@ -135,9 +255,7 @@
                    StaysOpen="False"
                    Opened="TargetBranchPopup_OnOpened">
                 <Border Width="{Binding ActualWidth, ElementName=TargetBranchPickerButton}"
-                        BorderThickness="1"
-                        BorderBrush="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}"
-                        Background="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowBackgroundBrushKey}}">
+                        Style="{StaticResource BranchPickerPopupBorderStyle}">
                     <StackPanel FocusManager.FocusedElement="{Binding ElementName=TargetBranchSearchTb}">
                         <Grid Margin="4">
                             <TextBox x:Name="TargetBranchSearchTb"
@@ -162,23 +280,10 @@
                         </Grid>
 
                         <ListBox MaxHeight="180"
-                                 BorderThickness="0"
-                                 Background="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
-                                 Foreground="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}"
                                  ItemsSource="{Binding FilteredTargetBranches}"
                                  SelectedItem="{Binding SelectedTargetBranch, Mode=TwoWay}"
-                                 ItemContainerStyle="{StaticResource BranchPickerListStyle}">
-                            <ListBox.Style>
-                                <Style TargetType="ListBox">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding AnyFilteredTargetBranches}" Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListBox.Style>
-                        </ListBox>
+                                 Style="{StaticResource BranchPickerListBoxStyle}"
+                                 ItemContainerStyle="{StaticResource BranchPickerListStyle}" />
 
                         <TextBlock Margin="8,4,8,8"
                                    Text="No matching branches">

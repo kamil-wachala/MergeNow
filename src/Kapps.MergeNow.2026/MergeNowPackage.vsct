@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidMergeNowPackage">
+
+    <Groups>
+      <Group guid="guidMergeNowPackageCmd" id="MergeNowMenuGroup" priority="0x0100">
+        <Parent guid="guidViewTfsHistory" id="ViewTfsHistoryId"/>
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidMergeNowPackageCmd" id="MergeNowCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidMergeNowPackageCmd" id="MergeNowMenuGroup" />
+        <Icon guid="guidImages" id="mergeNowPic" />
+        <Strings>
+          <ButtonText>Merge Now</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\MergeNowCommand.png" usedList="mergeNowPic"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+
+    <GuidSymbol name="guidMergeNowPackage" value="{0741861b-9c7e-4aad-a1d2-04379f0caa44}" />
+
+	  <GuidSymbol name="guidViewTfsHistory" value="{FFE1131C-8EA1-4D05-9728-34AD4611BDA9}">
+		  <IDSymbol name="ViewTfsHistoryId" value="0x1040" />
+	  </GuidSymbol>
+
+    <GuidSymbol name="guidMergeNowPackageCmd" value="{0665ed10-e211-4f58-ac69-3d9ec6291e4e}">
+      <IDSymbol name="MergeNowMenuGroup" value="0x1875" />
+      <IDSymbol name="MergeNowCommandId" value="0x1876" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{b3b7c397-2fce-4cdf-8518-f2c5647b6b84}" >
+      <IDSymbol name="mergeNowPic" value="1" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

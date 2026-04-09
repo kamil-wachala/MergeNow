@@ -36,8 +36,19 @@ namespace MergeNow.Services
                 return;
             }
 
-            VsShellUtilities.ShowMessageBox(_package, message, null, icon,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            if (ThreadHelper.CheckAccess())
+            {
+                VsShellUtilities.ShowMessageBox(_package, message, null, icon,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return;
+            }
+
+            ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(_package.DisposalToken);
+                VsShellUtilities.ShowMessageBox(_package, message, null, icon,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            });
         }
     }
 }

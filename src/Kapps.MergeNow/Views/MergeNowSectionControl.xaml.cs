@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
 namespace MergeNow.Views
 {
@@ -7,6 +7,12 @@ namespace MergeNow.Views
         public MergeNowSectionControl()
         {
             InitializeComponent();
+        }
+
+        private void TargetBranchPopup_OnOpened(object sender, System.EventArgs e)
+        {
+            TargetBranchSearchTb.Focus();
+            TargetBranchSearchTb.SelectAll();
         }
     }
 }

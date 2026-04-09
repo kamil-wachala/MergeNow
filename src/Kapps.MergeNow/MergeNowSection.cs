@@ -20,7 +20,7 @@ namespace MergeNow
         {
             try
             {
-                _mainViewModel = MergeNowPackage.Resolve<MergeNowSectionViewModel>()
+                _mainViewModel = MergeNowComposition.Resolve<MergeNowSectionViewModel>()
                     ?? throw new InvalidOperationException("Failed to resolve Merge Now view model.");
 
                 _mainView = new MergeNowSectionControl { DataContext = _mainViewModel };
@@ -32,7 +32,7 @@ namespace MergeNow
 
             try
             {
-                _memento = MergeNowPackage.Resolve<MergeNowSectionMemento>() ?? new MergeNowSectionMemento();
+                _memento = MergeNowComposition.Resolve<MergeNowSectionMemento>() ?? new MergeNowSectionMemento();
             }
             catch (Exception ex)
             {

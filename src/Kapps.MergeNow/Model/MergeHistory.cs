@@ -1,11 +1,13 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MergeNow.Model
 {
-    public class MergeHistory: IEnumerable<KeyValuePair<string, List<string>>>
+    public class MergeHistory : IEnumerable<KeyValuePair<string, List<string>>>
     {
-        private Dictionary<string, List<string>> Items { get; } = new Dictionary<string, List<string>>();
+        private Dictionary<string, List<string>> Items { get; } = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         public void Add(IEnumerable<string> sourceBranches, string targetBranch)
         {
@@ -19,25 +21,22 @@ namespace MergeNow.Model
                 return;
             }
 
-            foreach (string sourceBranch in sourceBranches)
+            foreach (var sourceBranch in sourceBranches)
             {
                 if (sourceBranch == null)
                 {
                     continue;
                 }
 
-                var key = sourceBranch.ToLower();
-
-                if (!Items.ContainsKey(key))
+                if (!Items.TryGetValue(sourceBranch, out var targetBranches))
                 {
-                    Items[key] = new List<string>();
+                    targetBranches = new List<string>();
+                    Items[sourceBranch] = targetBranches;
                 }
 
-                var value = targetBranch.ToLower();
-
-                if (!Items[key].Contains(value))
+                if (!targetBranches.Any(existingTargetBranch => string.Equals(existingTargetBranch, targetBranch, StringComparison.OrdinalIgnoreCase)))
                 {
-                    Items[key].Add(value);
+                    targetBranches.Add(targetBranch);
                 }
             }
         }

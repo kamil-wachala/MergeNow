@@ -10,13 +10,16 @@ namespace MergeNow.Core.Mvvm
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void SetValue<T>(ref T storage, T value, [CallerMemberName] string name = null)
+        protected bool SetValue<T>(ref T storage, T value, [CallerMemberName] string name = null)
         {
-            if (!EqualityComparer<T>.Default.Equals(storage, value))
+            if (EqualityComparer<T>.Default.Equals(storage, value))
             {
-                storage = value;
-                OnPropertyChanged(name);
+                return false;
             }
+
+            storage = value;
+            OnPropertyChanged(name);
+            return true;
         }
 
         protected void LinkToViewModel(IBaseCommand command)

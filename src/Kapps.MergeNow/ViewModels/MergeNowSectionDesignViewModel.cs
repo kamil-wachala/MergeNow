@@ -1,5 +1,7 @@
 ﻿using MergeNow.Core.Mvvm.Commands;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace MergeNow.ViewModels
 {
@@ -18,12 +20,23 @@ namespace MergeNow.ViewModels
             "$/releases/r02"
         };
 
+        public ICollectionView FilteredTargetBranches { get; }
+
         public bool IsSectionEnabled { get; set; } = true;
         public string ChangesetNumber { get; set; } = "123456";
         public string ChangesetName { get; set; } = "My changeset name";
         public string SelectedTargetBranch { get; set; } = "$/releases/r01";
+        public string TargetBranchSearchText { get; set; } = string.Empty;
+        public string TargetBranchPickerDisplayText => SelectedTargetBranch ?? "Select a target branch";
+        public bool IsTargetBranchPickerOpen { get; set; }
         public bool AnyTargetBranches => true;
+        public bool AnyFilteredTargetBranches => true;
         public bool CombinedMerge { get; set; } = true;
         public bool IsAdvancedExpanded { get; set; } = true;
+
+        public MergeNowSectionDesignViewModel()
+        {
+            FilteredTargetBranches = CollectionViewSource.GetDefaultView(TargetBranches);
+        }
     }
 }

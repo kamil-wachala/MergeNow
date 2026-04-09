@@ -28,23 +28,5 @@ namespace MergeNow.Core.Utils
                 errorHandler?.Invoke(ex);
             }
         }
-
-        public static T ReturnAsyncCatchErrors<T>(this Task<T> task, Action<Exception> errorHandler)
-        {
-            if (task == null)
-            {
-                return default;
-            }
-
-            try
-            {
-                return task.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                errorHandler?.Invoke(ex);
-                return default;
-            }
-        }
     }
 }

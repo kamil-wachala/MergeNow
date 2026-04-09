@@ -71,7 +71,7 @@ namespace MergeNow
                 return true;
             }
 
-            var message = $"MergeNow.2022 supports Visual Studio 2022 (v{VisualStudio2022MajorVersion}) only. Detected Visual Studio v{version.Major}. Please install the MergeNow.2026 extension instead.";
+            var message = $"MergeNow (VS 2022) supports Visual Studio 2022 (v{VisualStudio2022MajorVersion}) only. Detected Visual Studio v{version.Major}. Please install the MergeNow (VS 2026) extension instead.";
             Logger.Error(message);
             VsShellUtilities.ShowMessageBox(this, message, "Merge Now",
                 OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);

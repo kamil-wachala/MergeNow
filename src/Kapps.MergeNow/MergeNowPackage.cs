@@ -1,6 +1,7 @@
 using MergeNow.Services;
 using MergeNow.Settings;
 using MergeNow.ViewModels;
+using EnvDTE;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -19,8 +20,19 @@ namespace MergeNow
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class MergeNowPackage : AsyncPackage
     {
+#if VS2022_PACKAGE
+        private const int VisualStudio2022MajorVersion = 17;
+#endif
+
         protected async override Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+#if VS2022_PACKAGE
+            if (!await IsSupportedHostAsync(cancellationToken))
+            {
+                return;
+            }
+#endif
+
             try
             {
                 var serviceCollection = new ServiceCollection();
@@ -45,6 +57,27 @@ namespace MergeNow
 
             await base.InitializeAsync(cancellationToken, progress);
         }
+
+#if VS2022_PACKAGE
+        private async System.Threading.Tasks.Task<bool> IsSupportedHostAsync(CancellationToken cancellationToken)
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            var dte = await GetServiceAsync(typeof(DTE)) as DTE;
+            var versionText = dte?.Version;
+
+            if (!Version.TryParse(versionText, out var version) || version.Major <= VisualStudio2022MajorVersion)
+            {
+                return true;
+            }
+
+            var message = $"MergeNow.2022 supports Visual Studio 2022 (v{VisualStudio2022MajorVersion}) only. Detected Visual Studio v{version.Major}. Please install the MergeNow.2026 extension instead.";
+            Logger.Error(message);
+            VsShellUtilities.ShowMessageBox(this, message, "Merge Now",
+                OLEMSGICON.OLEMSGICON_WARNING, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            return false;
+        }
+#endif
 
         private void ConfigureServices(IServiceCollection services)
         {

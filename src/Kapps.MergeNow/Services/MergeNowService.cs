@@ -21,7 +21,7 @@ namespace MergeNow.Services
 {
     internal class MergeNowService : IMergeNowService
     {
-        private const string MergeNotStartedSummary = "Merge not started.";
+        private const string NothingToMergeSummary = "Nothing to merge.";
         private const string MergeCancelledSummary = "Merge cancelled.";
         private const string MergeCompletedSummary = "Merge completed.";
         private const string MergePartiallyCompletedSummary = "Merge partially completed.";
@@ -137,7 +137,7 @@ namespace MergeNow.Services
 
             if (workspace == null)
             {
-                return CreateResult(MergeResultType.Warning, MergeNotStartedSummary, "No TFS workspace found.");
+                return CreateResult(MergeResultType.Error, MergeCancelledSummary, "No TFS workspace found.");
             }
 
             var versionControlServer = await GetVersionControlAsync();
@@ -145,7 +145,7 @@ namespace MergeNow.Services
 
             if (sourceBranches == null || !sourceBranches.Any())
             {
-                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "There are no source branches to merge.");
+                return CreateResult(MergeResultType.Error, MergeCancelledSummary, "There are no source branches to merge.");
             }
 
             var mergeBranches = new List<string>();
@@ -161,7 +161,7 @@ namespace MergeNow.Services
 
             if (!mergeBranches.Any())
             {
-                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "There are no target branches to merge.");
+                return CreateResult(MergeResultType.Error, MergeCancelledSummary, "There are no target branches to merge.");
             }
 
             ChangesetVersionSpec changesetVersionSpec = new ChangesetVersionSpec(changeset.ChangesetId);
@@ -185,7 +185,7 @@ namespace MergeNow.Services
             var mergeResult = ReportMergeStatus(mergeStatus);
             if (mergeResult == null)
             {
-                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "Merge did not produce a status.");
+                return CreateResult(MergeResultType.Error, MergeCancelledSummary, "Merge did not produce a status.");
             }
 
             bool isFirstMerge = !mergeHistory.Any();
@@ -245,10 +245,10 @@ namespace MergeNow.Services
 
             if (mergeStatus.NoActionNeeded)
             {
-                status.AppendLine(MergeCancelledSummary);
+                status.AppendLine("Merge cancelled.");
                 status.AppendLine();
                 status.AppendLine("There are no changes to be merged.");
-                return CreateResult(MergeResultType.Info, MergeCancelledSummary, status.ToString());
+                return CreateResult(MergeResultType.Success, NothingToMergeSummary, status.ToString());
             }
 
             void AddStatusInfo()
@@ -297,16 +297,16 @@ namespace MergeNow.Services
             var failures = mergeStatus.GetFailures();
             if (failures.Any())
             {
-                status.AppendLine("Merge partially complited.");
+                status.AppendLine("Merge partially completed.");
                 AddStatusInfo();
                 status.AppendLine("Open Team Explorer Output panel to see failure details.");
-                return CreateResult(MergeResultType.Warning, MergePartiallyCompletedSummary, status.ToString());
+                return CreateResult(MergeResultType.Error, MergePartiallyCompletedSummary, status.ToString());
             }
 
-            status.AppendLine(MergeCompletedSummary);
+            status.AppendLine("Merge completed.");
             AddStatusInfo();
             status.AppendLine("Please review the changes and check-in manually.");
-            return CreateResult(MergeResultType.Info, MergeCompletedSummary, status.ToString());
+            return CreateResult(MergeResultType.Success, MergeCompletedSummary, status.ToString());
         }
 
         private static List<string> GetSourceBranches(VersionControlServer versionControlServer, Changeset changeset)

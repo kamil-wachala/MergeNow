@@ -2,8 +2,7 @@
 {
     public enum MergeResultType
     {
-        Info,
-        Warning,
+        Success,
         Error
     }
 }

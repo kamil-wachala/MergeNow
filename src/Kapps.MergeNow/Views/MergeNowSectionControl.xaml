@@ -29,6 +29,28 @@
                 <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
                 <Setter Property="BorderThickness" Value="0" />
             </Style>
+            <Style x:Key="MergeStatusIconStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Foreground" Value="#2E7D32" />
+                <Setter Property="Text" Value="&#xE73E;" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding MergeStatusKind}" Value="{x:Static model:MergeResultType.Error}">
+                        <Setter Property="Foreground" Value="#C62828" />
+                        <Setter Property="Text" Value="&#xEA39;" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="MergeStatusSummaryStyle" TargetType="TextBlock" BasedOn="{StaticResource VsTextBlockStyle}">
+                <Setter Property="Foreground" Value="#2E7D32" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Style.Triggers>
+                     <DataTrigger Binding="{Binding MergeStatusKind}" Value="{x:Static model:MergeResultType.Error}">
+                        <Setter Property="Foreground" Value="#C62828" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <Style x:Key="BranchPickerButtonStyle" TargetType="ToggleButton">
                 <Setter Property="Background" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxBackgroundBrushKey}}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ComboBoxTextBrushKey}}" />
@@ -188,7 +210,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -306,37 +327,41 @@
             </Popup>
         </Grid>
 
-        <Button Content="Merge" Width="120" Margin="5,5,5,0" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
-                Height="22" Command="{Binding MergeCommand}" HorizontalAlignment="Left"
-                Style="{DynamicResource {x:Static shell:VsResourceKeys.ButtonStyleKey}}"/>
+        <Grid Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,5,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
-                   Margin="5,8,5,0"
-                   Text="{Binding MergeStatusSummary}"
-                   FontWeight="SemiBold"
-                   TextTrimming="CharacterEllipsis"
-                   Visibility="{Binding HasMergeStatus, Converter={StaticResource BoolToVisConverter}}"
-                   ToolTipService.InitialShowDelay="0"
-                   ToolTipService.BetweenShowDelay="0"
-                   ToolTipService.ShowDuration="60000">
-            <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VsTextBlockStyle}">
-                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding MergeStatusKind}" Value="{x:Static model:MergeResultType.Warning}">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.PanelHyperlinkBrushKey}}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-            <TextBlock.ToolTip>
-                <TextBlock MaxWidth="480"
-                           Text="{Binding MergeStatusDetails}"
-                           TextWrapping="Wrap" />
-            </TextBlock.ToolTip>
-        </TextBlock>
+            <Button Content="Merge" Width="120"
+                    Height="22"
+                    Command="{Binding MergeCommand}"
+                    HorizontalAlignment="Left"
+                    Style="{DynamicResource {x:Static shell:VsResourceKeys.ButtonStyleKey}}"/>
 
-        <Expander Header="Advanced" Margin="5,10,5,0" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
+            <Border Grid.Column="1"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding HasMergeStatus, Converter={StaticResource BoolToVisConverter}}"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.BetweenShowDelay="0"
+                    ToolTipService.ShowDuration="60000">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource MergeStatusIconStyle}" />
+                    <TextBlock Margin="6,0,0,0"
+                               Text="{Binding MergeStatusSummary}"
+                               TextTrimming="CharacterEllipsis"
+                               Style="{StaticResource MergeStatusSummaryStyle}" />
+                </StackPanel>
+                <Border.ToolTip>
+                    <TextBlock MaxWidth="480"
+                               Text="{Binding MergeStatusDetails}"
+                               TextWrapping="Wrap" />
+                </Border.ToolTip>
+            </Border>
+        </Grid>
+
+        <Expander Header="Advanced" Margin="5,10,5,0" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
                   IsExpanded="{Binding IsAdvancedExpanded}"  Style="{StaticResource VsExpanderStyle}">
             <StackPanel Orientation="Vertical" Margin="5">
 

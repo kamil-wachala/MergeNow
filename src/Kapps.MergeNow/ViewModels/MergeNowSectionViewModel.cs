@@ -384,7 +384,7 @@ namespace MergeNow.ViewModels
 
         private void ClearMergeStatus()
         {
-            _mergeStatusKind = MergeResultType.Info;
+            _mergeStatusKind = MergeResultType.Success;
             MergeStatusSummary = null;
             MergeStatusDetails = null;
             RaisePropertyChanged(nameof(MergeStatusKind));
@@ -395,9 +395,6 @@ namespace MergeNow.ViewModels
             switch (resultKind)
             {
                 case MergeResultType.Error:
-                    SystemSounds.Hand.Play();
-                    break;
-                case MergeResultType.Warning:
                     SystemSounds.Exclamation.Play();
                     break;
                 default:

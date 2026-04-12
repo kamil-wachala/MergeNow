@@ -37,7 +37,7 @@ namespace MergeNow.ViewModels
         public bool HasMergeStatus => true;
         public string MergeStatusSummary { get; } = "Merge completed.";
         public string MergeStatusDetails { get; } = "Merge statistics:\nFiles: 12\nUpdates: 12\nPlease review the changes and check-in manually.";
-        public MergeResultType MergeStatusKind => MergeResultType.Info;
+        public MergeResultType MergeStatusKind => MergeResultType.Success;
 
         public MergeNowSectionDesignViewModel()
         {

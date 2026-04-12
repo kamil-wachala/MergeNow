@@ -21,6 +21,11 @@ namespace MergeNow.Services
 {
     internal class MergeNowService : IMergeNowService
     {
+        private const string MergeNotStartedSummary = "Merge not started.";
+        private const string MergeCancelledSummary = "Merge cancelled.";
+        private const string MergeCompletedSummary = "Merge completed.";
+        private const string MergePartiallyCompletedSummary = "Merge partially completed.";
+
         private readonly AsyncPackage _asyncPackage;
         private readonly IMergeNowSettings _settings;
         private readonly IMessageService _messageService;
@@ -110,7 +115,7 @@ namespace MergeNow.Services
             return targetBranches.Distinct(StringComparer.OrdinalIgnoreCase);
         }
 
-        public async Task MergeAsync(Changeset changeset, string targetBranch, MergeHistory mergeHistory)
+        public async Task<MergeResult> MergeAsync(Changeset changeset, string targetBranch, MergeHistory mergeHistory)
         {
             if (changeset == null)
             {
@@ -132,8 +137,7 @@ namespace MergeNow.Services
 
             if (workspace == null)
             {
-                _messageService.ShowWarning("No TFS workspace found.");
-                return;
+                return CreateResult(MergeResultType.Warning, MergeNotStartedSummary, "No TFS workspace found.");
             }
 
             var versionControlServer = await GetVersionControlAsync();
@@ -141,8 +145,7 @@ namespace MergeNow.Services
 
             if (sourceBranches == null || !sourceBranches.Any())
             {
-                _messageService.ShowWarning("There are no source branches to merge.");
-                return;
+                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "There are no source branches to merge.");
             }
 
             var mergeBranches = new List<string>();
@@ -158,8 +161,7 @@ namespace MergeNow.Services
 
             if (!mergeBranches.Any())
             {
-                _messageService.ShowWarning("There are no target branches to merge.");
-                return;
+                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "There are no target branches to merge.");
             }
 
             ChangesetVersionSpec changesetVersionSpec = new ChangesetVersionSpec(changeset.ChangesetId);
@@ -180,10 +182,10 @@ namespace MergeNow.Services
                 }
             }
 
-            bool canMerge = ReportMergeStatus(mergeStatus);
-            if (!canMerge)
+            var mergeResult = ReportMergeStatus(mergeStatus);
+            if (mergeResult == null)
             {
-                return;
+                return CreateResult(MergeResultType.Warning, MergeCancelledSummary, "Merge did not produce a status.");
             }
 
             bool isFirstMerge = !mergeHistory.Any();
@@ -213,6 +215,7 @@ namespace MergeNow.Services
             }
 
             pendingChangesPage?.Refresh();
+            return mergeResult;
         }
 
         public async Task ClearPendingChangesPageAsync()
@@ -231,23 +234,21 @@ namespace MergeNow.Services
             teamExplorer?.NavigateToPage(new Guid(TeamExplorerPageIds.PendingChanges), null);
         }
 
-        private bool ReportMergeStatus(GetStatus mergeStatus)
+        private MergeResult ReportMergeStatus(GetStatus mergeStatus)
         {
             if (mergeStatus == null)
             {
-                return false;
+                return null;
             }
 
             var status = new StringBuilder();
 
             if (mergeStatus.NoActionNeeded)
             {
-                status.AppendLine("Merge cancelled.");
+                status.AppendLine(MergeCancelledSummary);
                 status.AppendLine();
                 status.AppendLine("There are no changes to be merged.");
-
-                _messageService.ShowMessage(status.ToString());
-                return false;
+                return CreateResult(MergeResultType.Info, MergeCancelledSummary, status.ToString());
             }
 
             void AddStatusInfo()
@@ -299,19 +300,13 @@ namespace MergeNow.Services
                 status.AppendLine("Merge partially complited.");
                 AddStatusInfo();
                 status.AppendLine("Open Team Explorer Output panel to see failure details.");
-
-                _messageService.ShowWarning(status.ToString());
-            }
-            else
-            {
-                status.AppendLine("Merge completed.");
-                AddStatusInfo();
-                status.AppendLine("Please review the changes and check-in manually.");
-
-                _messageService.ShowMessage(status.ToString());
+                return CreateResult(MergeResultType.Warning, MergePartiallyCompletedSummary, status.ToString());
             }
 
-            return true;
+            status.AppendLine(MergeCompletedSummary);
+            AddStatusInfo();
+            status.AppendLine("Please review the changes and check-in manually.");
+            return CreateResult(MergeResultType.Info, MergeCompletedSummary, status.ToString());
         }
 
         private static List<string> GetSourceBranches(VersionControlServer versionControlServer, Changeset changeset)
@@ -585,6 +580,16 @@ namespace MergeNow.Services
 
             return ReflectionUtils.InvokeMethod<Task>("AddWorkItemsByIdAsync", model, new int[] { workItemId }, addByIdValue)
                 ?? Task.CompletedTask;
+        }
+
+        private static MergeResult CreateResult(MergeResultType kind, string summary, string details)
+        {
+            return new MergeResult
+            {
+                ResultType = kind,
+                Summary = summary,
+                Details = details
+            };
         }
     }
 }

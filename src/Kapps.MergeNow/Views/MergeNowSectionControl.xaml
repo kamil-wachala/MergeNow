@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vms="clr-namespace:MergeNow.ViewModels"
+             xmlns:model="clr-namespace:MergeNow.Model"
              xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
              xmlns:platform="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
              mc:Ignorable="d" d:Background="White" d:DesignHeight="320" d:DesignWidth="400"
@@ -15,6 +16,7 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
             <Style x:Key="VsTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}" />
             </Style>
@@ -186,6 +188,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -307,7 +310,33 @@
                 Height="22" Command="{Binding MergeCommand}" HorizontalAlignment="Left"
                 Style="{DynamicResource {x:Static shell:VsResourceKeys.ButtonStyleKey}}"/>
 
-        <Expander Header="Advanced" Margin="5,10,5,0" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
+        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"
+                   Margin="5,8,5,0"
+                   Text="{Binding MergeStatusSummary}"
+                   FontWeight="SemiBold"
+                   TextTrimming="CharacterEllipsis"
+                   Visibility="{Binding HasMergeStatus, Converter={StaticResource BoolToVisConverter}}"
+                   ToolTipService.InitialShowDelay="0"
+                   ToolTipService.BetweenShowDelay="0"
+                   ToolTipService.ShowDuration="60000">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource VsTextBlockStyle}">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.ToolWindowTextBrushKey}}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MergeStatusKind}" Value="{x:Static model:MergeResultType.Warning}">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static platform:EnvironmentColors.PanelHyperlinkBrushKey}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            <TextBlock.ToolTip>
+                <TextBlock MaxWidth="480"
+                           Text="{Binding MergeStatusDetails}"
+                           TextWrapping="Wrap" />
+            </TextBlock.ToolTip>
+        </TextBlock>
+
+        <Expander Header="Advanced" Margin="5,10,5,0" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"
                   IsExpanded="{Binding IsAdvancedExpanded}"  Style="{StaticResource VsExpanderStyle}">
             <StackPanel Orientation="Vertical" Margin="5">
 

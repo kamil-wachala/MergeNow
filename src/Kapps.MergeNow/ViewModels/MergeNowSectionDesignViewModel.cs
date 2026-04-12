@@ -1,4 +1,5 @@
 ﻿using MergeNow.Core.Mvvm.Commands;
+using MergeNow.Model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -33,6 +34,10 @@ namespace MergeNow.ViewModels
         public bool AnyFilteredTargetBranches => true;
         public bool CombinedMerge { get; set; } = true;
         public bool IsAdvancedExpanded { get; set; } = true;
+        public bool HasMergeStatus => true;
+        public string MergeStatusSummary { get; } = "Merge completed.";
+        public string MergeStatusDetails { get; } = "Merge statistics:\nFiles: 12\nUpdates: 12\nPlease review the changes and check-in manually.";
+        public MergeResultType MergeStatusKind => MergeResultType.Info;
 
         public MergeNowSectionDesignViewModel()
         {

@@ -5,6 +5,7 @@ using MergeNow.Model;
 using MergeNow.Services;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.VisualStudio.Shell;
+using System.Media;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -31,6 +32,30 @@ namespace MergeNow.ViewModels
         public ObservableCollection<string> TargetBranches { get; }
         private ICollectionView _filteredTargetBranches;
         public ICollectionView FilteredTargetBranches => EnsureFilteredTargetBranches();
+
+        private string _mergeStatusSummary;
+        public string MergeStatusSummary
+        {
+            get => _mergeStatusSummary;
+            set
+            {
+                if (SetValue(ref _mergeStatusSummary, value))
+                {
+                    RaisePropertyChanged(nameof(HasMergeStatus));
+                }
+            }
+        }
+
+        private string _mergeStatusDetails;
+        public string MergeStatusDetails
+        {
+            get => _mergeStatusDetails;
+            set => SetValue(ref _mergeStatusDetails, value);
+        }
+
+        private MergeResultType _mergeStatusKind;
+        public bool HasMergeStatus => !string.IsNullOrWhiteSpace(MergeStatusSummary);
+        public MergeResultType MergeStatusKind => _mergeStatusKind;
 
         private bool _isOnline;
         public bool IsSectionEnabled
@@ -203,7 +228,8 @@ namespace MergeNow.ViewModels
             try
             {
                 IsSectionEnabled = false;
-                await Task.Run(() => _mergeNowService.MergeAsync(SelectedChangeset, SelectedTargetBranch, MergeHistory));
+                var mergeResult = await Task.Run(() => _mergeNowService.MergeAsync(SelectedChangeset, SelectedTargetBranch, MergeHistory));
+                ApplyMergeStatus(mergeResult);
             }
             finally
             {
@@ -279,6 +305,7 @@ namespace MergeNow.ViewModels
             IsTargetBranchPickerOpen = false;
             TargetBranches.Clear();
             RefreshTargetBranchFilter();
+            ClearMergeStatus();
 
             MergeHistory.Clear();
         }
@@ -337,6 +364,46 @@ namespace MergeNow.ViewModels
             });
 
             return _filteredTargetBranches;
+        }
+
+        private void ApplyMergeStatus(MergeResult mergeResult)
+        {
+            if (mergeResult == null)
+            {
+                ClearMergeStatus();
+                return;
+            }
+
+            _mergeStatusKind = mergeResult.ResultType;
+            MergeStatusSummary = mergeResult.Summary;
+            MergeStatusDetails = mergeResult.Details;
+            RaisePropertyChanged(nameof(MergeStatusKind));
+
+            PlayMergeSound(mergeResult.ResultType);
+        }
+
+        private void ClearMergeStatus()
+        {
+            _mergeStatusKind = MergeResultType.Info;
+            MergeStatusSummary = null;
+            MergeStatusDetails = null;
+            RaisePropertyChanged(nameof(MergeStatusKind));
+        }
+
+        private static void PlayMergeSound(MergeResultType resultKind)
+        {
+            switch (resultKind)
+            {
+                case MergeResultType.Error:
+                    SystemSounds.Hand.Play();
+                    break;
+                case MergeResultType.Warning:
+                    SystemSounds.Exclamation.Play();
+                    break;
+                default:
+                    SystemSounds.Asterisk.Play();
+                    break;
+            }
         }
     }
 }

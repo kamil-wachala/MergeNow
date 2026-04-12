@@ -16,7 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)MergeNowPackage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MergeNowSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MergeNowSectionMemento.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\**\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\MergeHistory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\MergeResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\MergeResultType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Properties\AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\**\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings\**\*.cs" />

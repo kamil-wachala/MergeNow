@@ -19,7 +19,7 @@ namespace MergeNow.Services
 
         Task<IEnumerable<string>> GetTargetBranchesAsync(Changeset changeset);
 
-        Task MergeAsync(Changeset changeset, string targetBranch, MergeHistory mergeHistory);
+        Task<MergeResult> MergeAsync(Changeset changeset, string targetBranch, MergeHistory mergeHistory);
 
         Task ClearPendingChangesPageAsync();
 

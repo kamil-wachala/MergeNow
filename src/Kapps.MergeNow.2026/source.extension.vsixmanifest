@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="MergeNow.2026.d8f14fa9-4942-4d3f-99e3-a5d1b85d8e41" Version="5.0" Language="en-US" Publisher="Kamil Wachala" />
+        <Identity Id="MergeNow.2026.d8f14fa9-4942-4d3f-99e3-a5d1b85d8e41" Version="6.0" Language="en-US" Publisher="Kamil Wachala" />
         <DisplayName>MergeNow (VS 2026)</DisplayName>
         <Description xml:space="preserve">Visual Studio 2026 extension for making quick TFVC merges. Pick a changeset and merge it directly to selected target branch.</Description>
         <MoreInfo>https://github.com/kamil-wachala/MergeNow</MoreInfo>
